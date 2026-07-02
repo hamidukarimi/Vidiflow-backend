@@ -7,21 +7,30 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String?  // nullable - OAuth users won't have a password
-  name      String?
-
-  emailVerified Boolean @default(false)
-  role          Role    @default(USER)
-
-  provider   AuthProvider @default(LOCAL)
-  providerId String?      // external OAuth id (Google/Facebook sub), null for LOCAL
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String?
+  name          String?
+  emailVerified Boolean        @default(false)
+  role          Role           @default(USER)
+  provider      AuthProvider   @default(LOCAL)
+  providerId    String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  refreshTokens RefreshToken[]
 
   @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique @db.VarChar(500)
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
 }
 
 enum Role {
