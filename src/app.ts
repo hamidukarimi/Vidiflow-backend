@@ -5,6 +5,9 @@ import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import { errorHandler } from './responses/errorResponse';
 
+import { catchAsync } from './shared/catchAsync';
+import { NotFoundError } from './errors';
+
 const app = express();
 
 app.use(helmet());
@@ -26,6 +29,11 @@ app.use(limiter);
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
+
+
+app.get('/test-error', catchAsync(async (req, res) => {
+  throw new NotFoundError('This is a test error');
+}));
 
 // 404 handler - no route matched
 app.use((req, res) => {
