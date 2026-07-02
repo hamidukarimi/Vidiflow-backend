@@ -7,19 +7,35 @@ datasource db {
 }
 
 model User {
-  id            String         @id @default(uuid())
-  email         String         @unique
+  id            String    @id @default(uuid())
+  email         String    @unique
   password      String?
   name          String?
-  emailVerified Boolean        @default(false)
-  role          Role           @default(USER)
-  provider      AuthProvider   @default(LOCAL)
+
+  emailVerified Boolean   @default(false)
+  role          Role      @default(USER)
+
+  provider      AuthProvider @default(LOCAL)
   providerId    String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+
   refreshTokens RefreshToken[]
+  downloads     Download[]  // add this line
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   @@map("users")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum AuthProvider {
+  LOCAL
+  GOOGLE
+  FACEBOOK
 }
 
 model RefreshToken {
@@ -33,13 +49,34 @@ model RefreshToken {
   @@map("refresh_tokens")
 }
 
-enum Role {
-  USER
-  ADMIN
+
+model Download {
+  id           String   @id @default(cuid())
+  videoUrl     String   @db.VarChar(500)
+  provider     String   @db.VarChar(50)  // e.g., "youtube", "tiktok"
+  title        String?  @db.VarChar(500)
+  thumbnail    String?  @db.Text
+
+  status       DownloadStatus @default(PENDING)  // pending, processing, completed, failed
+  format       String?  @db.VarChar(20)  // e.g., "mp4", "mp3", "webm"
+  quality      String?  @db.VarChar(20)  // e.g., "1080p", "720p", "128kbps"
+  
+  userId       String?  // nullable - guests can download
+  user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  errorMessage String?  @db.Text  // if status = FAILED, store error details
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("downloads")
 }
 
-enum AuthProvider {
-  LOCAL
-  GOOGLE
-  FACEBOOK
+enum DownloadStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
 }
+
+
