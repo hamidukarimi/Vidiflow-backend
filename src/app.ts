@@ -4,9 +4,8 @@ import cors from 'cors';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import { errorHandler } from './responses/errorResponse';
-
-import { catchAsync } from './shared/catchAsync';
-import { NotFoundError } from './errors';
+import { sendSuccess } from './responses/successResponse';
+import authRoutes from './modules/auth/auth.routes';
 
 const app = express();
 
@@ -27,20 +26,16 @@ const limiter = rateLimit({
 app.use(limiter);
 
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
+  sendSuccess(res, { status: 'ok' }, 'Server is healthy');
 });
 
+// Auth routes
+app.use('/api/v1/auth', authRoutes);
 
-app.get('/test-error', catchAsync(async (req, res) => {
-  throw new NotFoundError('This is a test error');
-}));
-
-// 404 handler - no route matched
 app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Route not found' });
 });
 
-// Centralized error handler - must be last
 app.use(errorHandler);
 
 export default app;
