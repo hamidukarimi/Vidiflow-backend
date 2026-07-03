@@ -41,14 +41,27 @@ export class AuthController {
   });
 
   logout = catchAsync(async (req: Request, res: Response) => {
-    const token = req.cookies.refreshToken;
-    if (token) {
+  const token = req.cookies.refreshToken || this.extractTokenFromHeader(req);
+  
+  if (token) {
+    try {
       await authService.logout(token);
+    } catch (err) {
+      // token may not exist in DB, ignore
     }
+  }
 
-    res.clearCookie('refreshToken');
-    return sendSuccess(res, null, 'Logged out successfully');
-  });
+  res.clearCookie('refreshToken');
+  return sendSuccess(res, null, 'Logged out successfully');
+});
+
+private extractTokenFromHeader(req: Request): string | null {
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith('Bearer ')) {
+    return null;
+  }
+  return authHeader.substring(7);
+}
 }
 
 export const authController = new AuthController();

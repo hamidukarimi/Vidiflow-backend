@@ -6,6 +6,7 @@ import rateLimit from 'express-rate-limit';
 import { errorHandler } from './responses/errorResponse';
 import { sendSuccess } from './responses/successResponse';
 import authRoutes from './modules/auth/auth.routes';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(cors({
 }));
 app.use(morgan('dev'));
 app.use(express.json());
+app.use(cookieParser());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
