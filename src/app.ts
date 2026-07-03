@@ -7,6 +7,7 @@ import { errorHandler } from './responses/errorResponse';
 import { sendSuccess } from './responses/successResponse';
 import authRoutes from './modules/auth/auth.routes';
 import cookieParser from 'cookie-parser';
+import downloadsRoutes from './modules/downloads/downloads.routes';
 
 const app = express();
 
@@ -33,6 +34,9 @@ app.get('/health', (req, res) => {
 
 // Auth routes
 app.use('/api/v1/auth', authRoutes);
+
+// Downloads routes
+app.use('/api/v1/downloads', downloadsRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Route not found' });

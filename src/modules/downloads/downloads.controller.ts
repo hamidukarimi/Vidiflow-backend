@@ -30,9 +30,9 @@ export class DownloadsController {
   });
 
   getDownload = catchAsync(async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
+const { id } = req.params as { id: string };
 
-    const result = await downloadsService.getDownload(id);
+const result = await downloadsService.getDownload(id);
     return sendSuccess(res, result, 'Download retrieved');
   });
 
@@ -52,9 +52,9 @@ export class DownloadsController {
       return sendSuccess(res, null, 'Must be logged in', 401);
     }
 
-    const { id } = req.params;
+const { id } = req.params as { id: string };
 
-    await downloadsService.removeFromFavorites(id, req.user.userId);
+await downloadsService.removeFromFavorites(id, req.user.userId);
     return sendSuccess(res, null, 'Removed from favorites');
   });
 
