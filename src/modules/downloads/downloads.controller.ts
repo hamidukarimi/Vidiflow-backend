@@ -4,6 +4,7 @@ import { sendSuccess } from '@responses/successResponse';
 import { downloadsService } from './downloads.service';
 import { AuthRequest } from '@middlewares/auth.middleware';
 import { CreateDownloadRequest } from './downloads.types';
+import { ValidationError } from '@errors/index';
 
 export class DownloadsController {
   createDownload = catchAsync(async (req: AuthRequest, res: Response) => {
@@ -16,6 +17,17 @@ export class DownloadsController {
 
     return sendSuccess(res, result, 'Download created successfully', 201);
   });
+
+  getVideoInfo = catchAsync(async (req: AuthRequest, res: Response) => {
+  const { url } = req.query as { url: string };
+
+  if (!url) {
+    throw new ValidationError('Video URL is required');
+  }
+
+  const result = await downloadsService.getVideoInfo(url);
+  return sendSuccess(res, result, 'Video info retrieved');
+});
 
   getDownloadHistory = catchAsync(async (req: AuthRequest, res: Response) => {
     if (!req.user) {

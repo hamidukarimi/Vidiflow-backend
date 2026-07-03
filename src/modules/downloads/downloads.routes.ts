@@ -5,6 +5,9 @@ import { optionalAuth, requireAuth } from '@middlewares/auth.middleware';
 
 const router = Router();
 
+// GET /api/v1/downloads/info?url=... - get video info (formats/qualities)
+router.get('/info', downloadsController.getVideoInfo);
+
 // POST /api/v1/downloads - create download (guests + users)
 router.post(
   '/',
