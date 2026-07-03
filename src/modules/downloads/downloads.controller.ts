@@ -29,6 +29,56 @@ export class DownloadsController {
   return sendSuccess(res, result, 'Video info retrieved');
 });
 
+
+
+
+downloadFile = catchAsync(async (req: AuthRequest, res: Response) => {
+  const { id } = req.params as { id: string };
+
+  const download = await downloadsService.getDownload(id);
+
+  // Only allow download if status is COMPLETED
+  if (download.status !== 'COMPLETED') {
+    throw new ValidationError(`Download not ready. Current status: ${download.status}`);
+  }
+
+  // In real implementation, would read filePath from database and stream to client
+  // For now, return the download metadata (actual file serving comes in next step)
+  return sendSuccess(res, {
+    id: download.id,
+    fileName: `${download.title || 'video'}.${download.format || 'mp4'}`,
+    fileSize: 52428800, // placeholder
+    downloadUrl: `/api/v1/downloads/${id}/stream`, // next endpoint
+  }, 'Download ready');
+});
+
+
+
+
+streamFile = catchAsync(async (req: AuthRequest, res: Response) => {
+  const { id } = req.params as { id: string };
+
+  const download = await downloadsService.getDownload(id);
+
+  if (download.status !== 'COMPLETED') {
+    throw new ValidationError('Download not yet complete');
+  }
+
+  // Placeholder: in real implementation with actual files:
+  // const fs = require('fs');
+  // const filePath = path.join(process.env.DOWNLOADS_DIR, download.id, 'video.mp4');
+  // res.setHeader('Content-Disposition', `attachment; filename="${download.title}.${download.format}"`);
+  // res.setHeader('Content-Type', 'video/mp4');
+  // fs.createReadStream(filePath).pipe(res);
+
+  // For now, return placeholder response
+  return sendSuccess(res, { message: 'File streaming implemented in next step' });
+});
+
+
+
+
+
   getDownloadHistory = catchAsync(async (req: AuthRequest, res: Response) => {
     if (!req.user) {
       return sendSuccess(res, { downloads: [], total: 0 }, 'No download history');

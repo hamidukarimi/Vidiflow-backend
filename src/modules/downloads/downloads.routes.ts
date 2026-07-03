@@ -19,6 +19,12 @@ router.post(
 // GET /api/v1/downloads/:id - get single download
 router.get('/:id', downloadsController.getDownload);
 
+// GET /api/v1/downloads/:id/download - get download info and link
+router.get('/:id/download', downloadsController.downloadFile);
+
+// GET /api/v1/downloads/:id/stream - stream actual file to client
+router.get('/:id/stream', downloadsController.streamFile);
+
 // GET /api/v1/downloads/history - download history (logged-in users)
 router.get('/history', optionalAuth, downloadsController.getDownloadHistory);
 
