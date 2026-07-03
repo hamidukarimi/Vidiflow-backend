@@ -1,6 +1,7 @@
 import { IProvider } from './IProvider';
 import { ValidationError } from '@errors/index';
 import { youtubeProvider } from './youtube/youtube.provider';
+import { tiktokProvider } from './tiktok/tiktok.provider';
 
 export class ProviderRegistry {
   private providers: IProvider[] = [];
@@ -51,3 +52,4 @@ export const providerRegistry = new ProviderRegistry();
 
 // Register providers
 providerRegistry.register(youtubeProvider);
+providerRegistry.register(tiktokProvider);
