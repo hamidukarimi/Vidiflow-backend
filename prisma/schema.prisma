@@ -19,7 +19,8 @@ model User {
   providerId    String?
 
   refreshTokens RefreshToken[]
-  downloads     Download[]  // add this line
+  downloads     Download[]
+  favorites     Favorite[]  // add this line
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -53,18 +54,20 @@ model RefreshToken {
 model Download {
   id           String   @id @default(cuid())
   videoUrl     String   @db.VarChar(500)
-  provider     String   @db.VarChar(50)  // e.g., "youtube", "tiktok"
+  provider     String   @db.VarChar(50)
   title        String?  @db.VarChar(500)
   thumbnail    String?  @db.Text
 
-  status       DownloadStatus @default(PENDING)  // pending, processing, completed, failed
-  format       String?  @db.VarChar(20)  // e.g., "mp4", "mp3", "webm"
-  quality      String?  @db.VarChar(20)  // e.g., "1080p", "720p", "128kbps"
+  status       DownloadStatus @default(PENDING)
+  format       String?  @db.VarChar(20)
+  quality      String?  @db.VarChar(20)
   
-  userId       String?  // nullable - guests can download
+  userId       String?
   user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 
-  errorMessage String?  @db.Text  // if status = FAILED, store error details
+  favorites    Favorite[]  // add this line
+
+  errorMessage String?  @db.Text
 
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -77,6 +80,21 @@ enum DownloadStatus {
   PROCESSING
   COMPLETED
   FAILED
+}
+
+
+model Favorite {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  downloadId String
+  download   Download @relation(fields: [downloadId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, downloadId])  // one favorite per user per download
+  @@map("favorites")
 }
 
 
