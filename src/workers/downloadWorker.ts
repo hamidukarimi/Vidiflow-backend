@@ -1,12 +1,8 @@
 import { Worker } from 'bullmq';
-import { createClient } from 'redis';
 import { downloadsRepository } from '@modules/downloads/downloads.repository';
 import { providerRegistry } from '@modules/providers/ProviderRegistry';
 
-const redisClient = createClient({
-  host: process.env.REDIS_HOST || 'localhost',
-  port: parseInt(process.env.REDIS_PORT || '6379'),
-});
+const redisUrl = `redis://${process.env.REDIS_HOST || 'localhost'}:${process.env.REDIS_PORT || '6379'}`;
 
 const downloadWorker = new Worker(
   'downloads',
@@ -48,8 +44,10 @@ const downloadWorker = new Worker(
     }
   },
   {
-    connection: redisClient,
-    concurrency: 2, // process 2 downloads simultaneously
+    connection: {
+      url: redisUrl,
+    },
+    concurrency: 2,
   }
 );
 

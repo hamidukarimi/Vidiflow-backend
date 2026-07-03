@@ -2,6 +2,7 @@ import { downloadsRepository } from './downloads.repository';
 import { providerRegistry } from '@modules/providers/ProviderRegistry';
 import { CreateDownloadRequest, DownloadResponse, VideoInfoResponse } from './downloads.types';
 import { ValidationError, NotFoundError } from '@errors/index';
+import { downloadQueue } from '@shared/queue';
 
 export class DownloadsService {
   async createDownload(
@@ -22,15 +23,35 @@ export class DownloadsService {
     }
 
     // Create download record with PENDING status
-    const download = await downloadsRepository.createDownload({
-      videoUrl: req.videoUrl,
-      provider: provider.name,
-      format: req.format,
-      quality: req.quality,
-      userId,
-    });
+const download = await downloadsRepository.createDownload({
+  videoUrl: req.videoUrl,
+  provider: provider.name,
+  format: req.format,
+  quality: req.quality,
+  userId,
+});
 
-    return this.mapDownloadToResponse(download);
+// Queue the download job (will be processed in background)
+
+
+await downloadQueue.add(
+  'process-download',
+  {
+    downloadId: download.id,
+    videoUrl: req.videoUrl,
+    format: req.format,
+    quality: req.quality,
+  },
+  {
+    attempts: 3,
+    backoff: {
+      type: 'exponential',
+      delay: 2000,
+    },
+  }
+);
+
+return this.mapDownloadToResponse(download);
   }
 
   async getVideoInfo(url: string): Promise<VideoInfoResponse> {
