@@ -1,6 +1,7 @@
 import { Worker } from 'bullmq';
 import { downloadsRepository } from '@modules/downloads/downloads.repository';
 import { providerRegistry } from '@modules/providers/ProviderRegistry';
+import { getIO } from '@shared/socketServer';
 
 const redisUrl = `redis://${process.env.REDIS_HOST || 'localhost'}:${process.env.REDIS_PORT || '6379'}`;
 
@@ -10,11 +11,17 @@ const downloadWorker = new Worker(
     console.log(`Processing download job ${job.id}:`, job.data);
 
     const { downloadId, videoUrl, format, quality } = job.data;
+    const io = getIO();
 
     try {
-      // Update status to PROCESSING
+      // Emit: started processing
       await downloadsRepository.updateDownload(downloadId, {
         status: 'PROCESSING',
+      });
+      io.to(`download:${downloadId}`).emit('download-status', {
+        downloadId,
+        status: 'PROCESSING',
+        progress: 10,
       });
 
       // Use provider to download
@@ -26,19 +33,29 @@ const downloadWorker = new Worker(
       const result = await provider.download(videoUrl, { format, quality });
 
       if (result.success) {
-  // Update status to COMPLETED with download URL
-  await downloadsRepository.updateDownload(downloadId, {
-    status: 'COMPLETED',
-  });
-  return { success: true, downloadUrl: result.downloadUrl };  // Changed
-} else {
-  throw new Error(result.error || 'Download failed');
-}
+        // Emit: completed
+        await downloadsRepository.updateDownload(downloadId, {
+          status: 'COMPLETED',
+        });
+        io.to(`download:${downloadId}`).emit('download-status', {
+          downloadId,
+          status: 'COMPLETED',
+          progress: 100,
+        });
+        return { success: true, downloadUrl: result.downloadUrl };
+      } else {
+        throw new Error(result.error || 'Download failed');
+      }
     } catch (error) {
-      // Update status to FAILED
+      // Emit: failed
       await downloadsRepository.updateDownload(downloadId, {
         status: 'FAILED',
         errorMessage: error instanceof Error ? error.message : 'Unknown error',
+      });
+      io.to(`download:${downloadId}`).emit('download-status', {
+        downloadId,
+        status: 'FAILED',
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
       throw error;
     }

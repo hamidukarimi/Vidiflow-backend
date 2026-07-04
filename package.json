@@ -4,12 +4,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-  "dev": "nodemon --watch src --exec ts-node -r tsconfig-paths/register src/server.ts",
-  "worker": "ts-node -r tsconfig-paths/register src/workers/downloadWorker.ts",
-  "build": "tsc",
-  "start": "node dist/server.js",
-  "typecheck": "tsc --noEmit"
-},
+    "dev": "nodemon --watch src --exec ts-node -r tsconfig-paths/register src/server.ts",
+    "worker": "ts-node -r tsconfig-paths/register src/workers/downloadWorker.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "typecheck": "tsc --noEmit"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -29,7 +29,8 @@
     "morgan": "^1.11.0",
     "multer": "^2.2.0",
     "pg": "^8.22.0",
-    "redis": "^6.1.0"
+    "redis": "^6.1.0",
+    "socket.io": "^4.8.3"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
@@ -41,6 +42,7 @@
     "@types/multer": "^2.1.0",
     "@types/node": "^26.1.0",
     "@types/pg": "^8.20.0",
+    "@types/socket.io": "^3.0.1",
     "nodemon": "^3.1.14",
     "prisma": "^7.8.0",
     "ts-node": "^10.9.2",
