@@ -76,6 +76,21 @@ streamFile = catchAsync(async (req: AuthRequest, res: Response) => {
 });
 
 
+getDownloadStatus = catchAsync(async (req: AuthRequest, res: Response) => {
+  const { id } = req.params as { id: string };
+
+  const download = await downloadsService.getDownload(id);
+
+  const statusResponse = {
+    id: download.id,
+    status: download.status,
+    error: download.status === 'FAILED' ? download.errorMessage : undefined,
+  };
+
+  return sendSuccess(res, statusResponse, 'Download status retrieved');
+});
+
+
 
 
 

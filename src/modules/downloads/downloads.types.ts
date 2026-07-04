@@ -13,6 +13,7 @@ export interface DownloadResponse {
   quality: string | null;
   title: string | null;
   thumbnail: string | null;
+  errorMessage?: string | null;  // add this line
   createdAt: string;
   updatedAt: string;
 }
@@ -27,4 +28,11 @@ export interface VideoInfoResponse {
 export interface DownloadHistoryResponse {
   downloads: DownloadResponse[];
   total: number;
+}
+
+export interface DownloadStatusResponse {
+  id: string;
+  status: string;
+  progress?: number; // 0-100
+  error?: string;
 }

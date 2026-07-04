@@ -25,6 +25,9 @@ router.get('/:id/download', downloadsController.downloadFile);
 // GET /api/v1/downloads/:id/stream - stream actual file to client
 router.get('/:id/stream', downloadsController.streamFile);
 
+// GET /api/v1/downloads/:id/status - lightweight status check for polling
+router.get('/:id/status', downloadsController.getDownloadStatus);
+
 // GET /api/v1/downloads/history - download history (logged-in users)
 router.get('/history', optionalAuth, downloadsController.getDownloadHistory);
 

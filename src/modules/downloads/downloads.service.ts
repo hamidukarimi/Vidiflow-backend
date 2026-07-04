@@ -112,20 +112,21 @@ return this.mapDownloadToResponse(download);
     };
   }
 
-  private mapDownloadToResponse(download: any): DownloadResponse {
-    return {
-      id: download.id,
-      videoUrl: download.videoUrl,
-      provider: download.provider,
-      status: download.status,
-      format: download.format,
-      quality: download.quality,
-      title: download.title,
-      thumbnail: download.thumbnail,
-      createdAt: download.createdAt.toISOString(),
-      updatedAt: download.updatedAt.toISOString(),
-    };
-  }
+private mapDownloadToResponse(download: any): DownloadResponse {
+  return {
+    id: download.id,
+    videoUrl: download.videoUrl,
+    provider: download.provider,
+    status: download.status,
+    format: download.format,
+    quality: download.quality,
+    title: download.title,
+    thumbnail: download.thumbnail,
+    errorMessage: download.errorMessage,  // add this line
+    createdAt: download.createdAt.toISOString(),
+    updatedAt: download.updatedAt.toISOString(),
+  };
+}
 }
 
 export const downloadsService = new DownloadsService();
