@@ -25,8 +25,9 @@ export interface DownloadOptions {
 
 export interface DownloadResult {
   success: boolean;
-  filePath?: string;
-  fileSize?: number;
+  downloadUrl?: string;
+  // filePath?: string;
+  // fileSize?: number;
   error?: string;
 }
 

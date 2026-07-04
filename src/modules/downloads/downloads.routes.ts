@@ -20,10 +20,10 @@ router.post(
 router.get('/:id', downloadsController.getDownload);
 
 // GET /api/v1/downloads/:id/download - get download info and link
-router.get('/:id/download', downloadsController.downloadFile);
+// router.get('/:id/download', downloadsController.downloadFile);
 
 // GET /api/v1/downloads/:id/stream - stream actual file to client
-router.get('/:id/stream', downloadsController.streamFile);
+// router.get('/:id/stream', downloadsController.streamFile);
 
 // GET /api/v1/downloads/:id/status - lightweight status check for polling
 router.get('/:id/status', downloadsController.getDownloadStatus);

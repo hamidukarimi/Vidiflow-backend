@@ -26,14 +26,14 @@ const downloadWorker = new Worker(
       const result = await provider.download(videoUrl, { format, quality });
 
       if (result.success) {
-        // Update status to COMPLETED
-        await downloadsRepository.updateDownload(downloadId, {
-          status: 'COMPLETED',
-        });
-        return { success: true, filePath: result.filePath };
-      } else {
-        throw new Error(result.error || 'Download failed');
-      }
+  // Update status to COMPLETED with download URL
+  await downloadsRepository.updateDownload(downloadId, {
+    status: 'COMPLETED',
+  });
+  return { success: true, downloadUrl: result.downloadUrl };  // Changed
+} else {
+  throw new Error(result.error || 'Download failed');
+}
     } catch (error) {
       // Update status to FAILED
       await downloadsRepository.updateDownload(downloadId, {

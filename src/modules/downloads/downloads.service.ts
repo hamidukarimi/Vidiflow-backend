@@ -122,7 +122,7 @@ private mapDownloadToResponse(download: any): DownloadResponse {
     quality: download.quality,
     title: download.title,
     thumbnail: download.thumbnail,
-    errorMessage: download.errorMessage,  // add this line
+    errorMessage: download.errorMessage,
     createdAt: download.createdAt.toISOString(),
     updatedAt: download.updatedAt.toISOString(),
   };

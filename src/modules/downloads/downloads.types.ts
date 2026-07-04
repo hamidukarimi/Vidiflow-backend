@@ -13,7 +13,7 @@ export interface DownloadResponse {
   quality: string | null;
   title: string | null;
   thumbnail: string | null;
-  errorMessage?: string | null;  // add this line
+  errorMessage?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -30,9 +30,9 @@ export interface DownloadHistoryResponse {
   total: number;
 }
 
-export interface DownloadStatusResponse {
-  id: string;
-  status: string;
-  progress?: number; // 0-100
-  error?: string;
-}
+// export interface DownloadStatusResponse {
+//   id: string;
+//   status: string;
+//   progress?: number; // 0-100
+//   error?: string;
+// }

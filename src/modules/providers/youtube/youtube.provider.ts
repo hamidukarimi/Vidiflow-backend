@@ -35,14 +35,12 @@ export class YouTubeProvider implements IProvider {
   }
 
   async download(url: string, options: DownloadOptions): Promise<DownloadResult> {
-    // Placeholder: in real implementation, would actually download video
-    // For now, return pending status to demonstrate async workflow
-    return {
-      success: true,
-      filePath: `/downloads/video_${Date.now()}.${options.format}`,
-      fileSize: 52428800, // 50MB placeholder
-    };
-  }
+  // In real implementation, will return actual platform download URL
+  return {
+    success: true,
+    downloadUrl: 'https://r4---sn-abc123.googlevideo.com/videofile/...', // placeholder
+  };
+}
 }
 
 export const youtubeProvider = new YouTubeProvider();

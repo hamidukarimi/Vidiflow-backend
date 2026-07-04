@@ -31,13 +31,11 @@ export class TikTokProvider implements IProvider {
   }
 
   async download(url: string, options: DownloadOptions): Promise<DownloadResult> {
-    // Placeholder: real implementation would download TikTok video
-    return {
-      success: true,
-      filePath: `/downloads/tiktok_${Date.now()}.${options.format}`,
-      fileSize: 15728640, // 15MB placeholder
-    };
-  }
+  return {
+    success: true,
+    downloadUrl: 'https://v16-web.tiktok.com/video/...', // placeholder
+  };
+}
 }
 
 export const tiktokProvider = new TikTokProvider();
