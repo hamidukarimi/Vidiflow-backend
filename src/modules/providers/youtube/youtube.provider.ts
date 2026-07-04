@@ -1,4 +1,5 @@
 import { IProvider, VideoInfo, DownloadOptions, DownloadResult, Format, Quality } from '../IProvider';
+import { extractionService } from '@shared/extractionService';
 
 export class YouTubeProvider implements IProvider {
   name = 'youtube';
@@ -14,33 +15,63 @@ export class YouTubeProvider implements IProvider {
   }
 
   async getVideoInfo(url: string): Promise<VideoInfo> {
-    // Placeholder: in real implementation, would extract actual video metadata
-    // For now, return mock data to demonstrate the contract
-    return {
-      title: 'Sample YouTube Video',
-      thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
-      duration: 213,
-      availableFormats: [
-        { id: 'mp4', name: 'MP4', extension: 'mp4' },
-        { id: 'webm', name: 'WebM', extension: 'webm' },
-        { id: 'mp3', name: 'MP3 Audio', extension: 'mp3' },
-      ],
-      availableQualities: [
-        { id: '1080p', label: '1080p', value: 1080 },
-        { id: '720p', label: '720p', value: 720 },
-        { id: '480p', label: '480p', value: 480 },
-        { id: '360p', label: '360p', value: 360 },
-      ],
-    };
+    try {
+      const metadata = await extractionService.getVideoMetadata(url);
+
+      // Parse formats from yt-dlp response
+      const formats = Array.from(
+        new Set(metadata.formats.map((f) => f.ext))
+      ).map((ext) => ({
+        id: ext,
+        name: ext.toUpperCase(),
+        extension: ext,
+      }));
+
+      // Parse qualities (resolutions)
+      const qualities = Array.from(
+        new Set(
+          metadata.formats
+            .filter((f) => f.height)
+            .map((f) => `${f.height}p`)
+        )
+      ).map((label) => ({
+        id: label,
+        label,
+        value: parseInt(label),
+      }));
+
+      return {
+        title: metadata.title,
+        thumbnail: metadata.thumbnail,
+        duration: metadata.duration,
+        availableFormats: formats,
+        availableQualities: qualities,
+      };
+    } catch (error) {
+      throw new Error(`YouTube extraction failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   async download(url: string, options: DownloadOptions): Promise<DownloadResult> {
-  // In real implementation, will return actual platform download URL
-  return {
-    success: true,
-    downloadUrl: 'https://r4---sn-abc123.googlevideo.com/videofile/...', // placeholder
-  };
-}
+    try {
+      // Get actual download URL from YouTube
+      const downloadUrl = await extractionService.getDownloadUrl(
+        url,
+        options.format || 'best',
+        options.quality || 'best'
+      );
+
+      return {
+        success: true,
+        downloadUrl,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Download failed',
+      };
+    }
+  }
 }
 
 export const youtubeProvider = new YouTubeProvider();

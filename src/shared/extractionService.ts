@@ -1,21 +1,28 @@
+/// <reference types="node" />
 import { execFile } from 'child_process';
 import { promisify } from 'util';
 
 const execFileAsync = promisify(execFile);
 
-// Full path to the newer yt-dlp version
 const YT_DLP_PATH = 'C:\\Users\\Person 1\\AppData\\Local\\Python\\pythoncore-3.14-64\\Scripts\\yt-dlp.exe';
+
+export interface VideoFormat {
+  format_id: string;
+  ext: string;
+  format: string;
+  filesize?: number;
+  height?: number;
+  width?: number;
+  fps?: number;
+  vcodec?: string;
+  acodec?: string;
+}
 
 export interface VideoMetadata {
   title: string;
   duration: number;
   thumbnail: string | null;
-  formats: Array<{
-    format_id: string;
-    ext: string;
-    format: string;
-    filesize?: number;
-  }>;
+  formats: VideoFormat[];
 }
 
 export class ExtractionService {
