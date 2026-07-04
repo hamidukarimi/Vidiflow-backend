@@ -8,6 +8,8 @@ import { sendSuccess } from './responses/successResponse';
 import authRoutes from './modules/auth/auth.routes';
 import cookieParser from 'cookie-parser';
 import downloadsRoutes from './modules/downloads/downloads.routes';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from '@config/swagger';
 
 const app = express();
 
@@ -37,6 +39,9 @@ app.use('/api/v1/auth', authRoutes);
 
 // Downloads routes
 app.use('/api/v1/downloads', downloadsRoutes);
+
+// Swagger documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Route not found' });
