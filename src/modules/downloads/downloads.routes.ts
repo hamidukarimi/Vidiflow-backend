@@ -7,6 +7,77 @@ const router = Router();
 
 /**
  * @swagger
+ * /api/v1/downloads/info:
+ *   get:
+ *     summary: Get video info (formats and qualities)
+ *     tags: [Downloads]
+ *     parameters:
+ *       - name: url
+ *         in: query
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+ *     responses:
+ *       200:
+ *         description: Video info retrieved
+ *       400:
+ *         description: Unsupported platform
+ */
+router.get('/info', downloadsController.getVideoInfo);
+
+/**
+ * @swagger
+ * /api/v1/downloads/history:
+ *   get:
+ *     summary: Get user's download history
+ *     tags: [Downloads]
+ *     parameters:
+ *       - name: limit
+ *         in: query
+ *         schema:
+ *           type: integer
+ *           default: 50
+ *       - name: offset
+ *         in: query
+ *         schema:
+ *           type: integer
+ *           default: 0
+ *     responses:
+ *       200:
+ *         description: History retrieved
+ */
+router.get('/history', optionalAuth, downloadsController.getDownloadHistory);
+
+/**
+ * @swagger
+ * /api/v1/downloads/favorites:
+ *   get:
+ *     summary: Get user's favorite downloads
+ *     tags: [Downloads]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - name: limit
+ *         in: query
+ *         schema:
+ *           type: integer
+ *           default: 50
+ *       - name: offset
+ *         in: query
+ *         schema:
+ *           type: integer
+ *           default: 0
+ *     responses:
+ *       200:
+ *         description: Favorites retrieved
+ *       401:
+ *         description: Unauthorized
+ */
+router.get('/favorites', requireAuth, downloadsController.getFavorites);
+
+/**
+ * @swagger
  * /api/v1/downloads:
  *   post:
  *     summary: Create a new download
@@ -75,27 +146,6 @@ router.get('/:id/status', downloadsController.getDownloadStatus);
 
 /**
  * @swagger
- * /api/v1/downloads/info:
- *   get:
- *     summary: Get video info (formats and qualities)
- *     tags: [Downloads]
- *     parameters:
- *       - name: url
- *         in: query
- *         required: true
- *         schema:
- *           type: string
- *           example: https://www.youtube.com/watch?v=dQw4w9WgXcQ
- *     responses:
- *       200:
- *         description: Video info retrieved
- *       400:
- *         description: Unsupported platform
- */
-router.get('/info', downloadsController.getVideoInfo);
-
-/**
- * @swagger
  * /api/v1/downloads/{id}/favorite:
  *   post:
  *     summary: Add download to favorites
@@ -132,32 +182,5 @@ router.get('/info', downloadsController.getVideoInfo);
  */
 router.post('/:id/favorite', requireAuth, downloadsController.addToFavorites);
 router.delete('/:id/favorite', requireAuth, downloadsController.removeFromFavorites);
-
-/**
- * @swagger
- * /api/v1/downloads/favorites:
- *   get:
- *     summary: Get user's favorite downloads
- *     tags: [Downloads]
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - name: limit
- *         in: query
- *         schema:
- *           type: integer
- *           default: 50
- *       - name: offset
- *         in: query
- *         schema:
- *           type: integer
- *           default: 0
- *     responses:
- *       200:
- *         description: Favorites retrieved
- *       401:
- *         description: Unauthorized
- */
-router.get('/favorites', requireAuth, downloadsController.getFavorites);
 
 export default router;

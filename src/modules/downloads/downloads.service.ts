@@ -1,8 +1,9 @@
 import { downloadsRepository } from './downloads.repository';
 import { providerRegistry } from '@modules/providers/ProviderRegistry';
 import { CreateDownloadRequest, DownloadResponse, VideoInfoResponse } from './downloads.types';
-import { ValidationError, NotFoundError } from '@errors/index';
+import { ValidationError, NotFoundError, ConflictError } from '@errors/index';
 import { downloadQueue } from '@shared/queue';
+
 
 export class DownloadsService {
   async createDownload(
@@ -91,14 +92,19 @@ return this.mapDownloadToResponse(download);
     return this.mapDownloadToResponse(download);
   }
 
-  async addToFavorites(downloadId: string, userId: string): Promise<void> {
-    const download = await downloadsRepository.getDownloadById(downloadId);
-    if (!download) {
-      throw new NotFoundError('Download not found');
-    }
-
-    await downloadsRepository.addFavorite(userId, downloadId);
+async addToFavorites(downloadId: string, userId: string): Promise<void> {
+  const download = await downloadsRepository.getDownloadById(downloadId);
+  if (!download) {
+    throw new NotFoundError('Download not found');
   }
+
+  const alreadyFavorited = await downloadsRepository.isFavorited(userId, downloadId);
+  if (alreadyFavorited) {
+    throw new ConflictError('Download already in favorites');
+  }
+
+  await downloadsRepository.addFavorite(userId, downloadId);
+}
 
   async removeFromFavorites(downloadId: string, userId: string): Promise<void> {
     await downloadsRepository.removeFavorite(userId, downloadId);
