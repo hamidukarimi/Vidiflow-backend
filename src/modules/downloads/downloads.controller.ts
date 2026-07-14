@@ -113,16 +113,16 @@ const result = await downloadsService.getDownload(id);
     return sendSuccess(res, result, 'Download retrieved');
   });
 
-  addToFavorites = catchAsync(async (req: AuthRequest, res: Response) => {
-    if (!req.user) {
-      return sendSuccess(res, null, 'Must be logged in to favorite', 401);
-    }
+addToFavorites = catchAsync(async (req: AuthRequest, res: Response) => {
+  if (!req.user) {
+    return sendSuccess(res, null, 'Must be logged in to favorite', 401);
+  }
 
-    const { downloadId } = req.body;
+  const { id } = req.params as { id: string };
 
-    await downloadsService.addToFavorites(downloadId, req.user.userId);
-    return sendSuccess(res, null, 'Added to favorites', 201);
-  });
+  await downloadsService.addToFavorites(id, req.user.userId);
+  return sendSuccess(res, null, 'Added to favorites', 201);
+});
 
   removeFromFavorites = catchAsync(async (req: AuthRequest, res: Response) => {
     if (!req.user) {
